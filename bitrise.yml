@@ -1,0 +1,33 @@
+format_version: "4"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: ""
+app:
+  envs:
+  - BITRISE_STEP_ID: android-version-check
+  - BITRISE_STEP_VERSION: 1.0.0
+  - BITRISE_STEP_GIT_CLONE_URL: https://github.com/Freebox-CI/bitrise-step-android-version-check.git
+  - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
+workflows:
+  test:
+    steps:
+    - change-workdir@1:
+        inputs:
+        - is_create_path: "false"
+        - path: $BITRISE_SOURCE_DIR
+    - path::./:
+        run_if: "true"
+        inputs:
+        - build_gradle_path: $BITRISE_SOURCE_DIR/app/build.gradle
+        - example_step_input: Example Step Input's value
+    - script@1:
+        run_if: '{{enveq "IS_NEW_VERSION" "yes"}}'
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            echo "Let's do some serious stuff!"
+    - script@1:
+        run_if: '{{enveq "IS_NEW_VERSION" "no"}}'
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            echo "Nothing to do, Bye Bye for now!"
